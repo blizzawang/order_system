@@ -62,7 +62,7 @@
         <!-- start: search & user box -->
         <div class="header-right">
 
-            <form action="pages-search-results.html" class="search nav-form">
+            <form action="index/to/food" class="search nav-form" method="post">
                 <div class="input-group input-search">
                     <input type="text" class="form-control" name="q" id="q" placeholder="Search...">
                     <span class="input-group-btn">
@@ -767,7 +767,38 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="mb-md">
-                                <button id="addToTable" class="btn btn-primary">Add <i class="fa fa-plus"></i></button>
+                                <button id="addToTable" class="btn btn-primary">添加 <i class="fa fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row datatables-header form-inline">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_length" id="datatable-editable_length">
+                                <label>
+                                    <select class="form-control" id="pageSelect">
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select> records per page
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <div id="datatable-editable_filter" class="dataTables_filter">
+                                <form action="index/to/food" method="post">
+                                    <label>
+                                        <%-- 设置隐藏域发送分页信息 --%>
+                                        <input type="hidden" name="pageNum" value="${param.pageNum}">
+                                        <input type="hidden" name="pageSize" value="${param.pageSize}">
+                                        <input type="search" name="keyword" class="form-control" placeholder="Searce"
+                                               aria-controls="datatable-editable">
+                                    </label>
+                                    <%--<button type="submit" class="btn btn-primary">搜索</button>--%>
+                                </form>
+
                             </div>
                         </div>
                     </div>
@@ -782,7 +813,7 @@
                             <th>操作</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="datatable-editable-tbody">
                         <c:if test="${empty requestScope.pageInfo.list}">
                             <tr>
                                 <td colspan="6" align="center">抱歉!没有查询到您要的数据!</td>
@@ -800,7 +831,7 @@
                                         <a href="#" class="hidden on-editing save-row"><i class="fa fa-save"></i></a>
                                         <a href="#" class="hidden on-editing cancel-row"><i class="fa fa-times"></i></a>
                                         <a href="#" class="on-default edit-row"><i class="fa fa-pencil"></i></a>
-                                        <a href="#" class="on-default remove-row"><i class="fa fa-trash-o"></i></a>
+                                        <i style="cursor: pointer" class="fa fa-trash-o on-default remove-row" data-toggle="modal" data-target="#myModal" onclick="food_delete($(this));" delete_id="${food.id}"></i>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -813,13 +844,13 @@
                                 <ul class="pagination">
                                     <%-- 点击跳转至首页 --%>
                                     <li>
-                                        <a href="index/to/food?pageNum=1&keyword=${param.keyword}">首页</a>
+                                        <a href="index/to/food?pageNum=1&keyword=${param.keyword}&pageSize=${param.pageSize}">首页</a>
                                     </li>
                                     <%-- 是否含有上一页 --%>
                                     <c:if test="${pageInfo.hasPreviousPage}">
                                         <%-- 上一页按钮 --%>
                                         <li>
-                                            <a href="index/to/food?pageNum=${pageInfo.pageNum - 1}&keyword=${param.keyword}">上一页</a>
+                                            <a href="index/to/food?pageNum=${pageInfo.pageNum - 1}&keyword=${param.keyword}&pageSize=${param.pageSize}">上一页</a>
                                         </li>
                                     </c:if>
                                     <c:if test="${!pageInfo.hasPreviousPage}">
@@ -837,7 +868,7 @@
                                         <c:if test="${pn != pageInfo.pageNum}">
                                             <%-- 点击页码，跳转至对应页数 --%>
                                             <li>
-                                                <a href="index/to/food?pageNum=${pn}&keyword=${param.keyword}">${pn}</a>
+                                                <a href="index/to/food?pageNum=${pn}&keyword=${param.keyword}&pageSize=${param.pageSize}">${pn}</a>
                                             </li>
                                         </c:if>
                                     </c:forEach>
@@ -845,7 +876,7 @@
                                     <c:if test="${pageInfo.hasNextPage}">
                                         <%-- 显示下一页按钮 --%>
                                         <li>
-                                            <a href="index/to/food?pageNum=${pageInfo.pageNum + 1}&keyword=${param.keyword}">下一页</a>
+                                            <a href="index/to/food?pageNum=${pageInfo.pageNum + 1}&keyword=${param.keyword}&pageSize=${param.pageSize}">下一页</a>
                                         </li>
                                     </c:if>
                                     <c:if test="${!pageInfo.hasNextPage}">
@@ -856,7 +887,7 @@
                                     </c:if>
                                     <%-- 点击跳转至最后一页 --%>
                                     <li>
-                                        <a href="index/to/food?pageNum=${pageInfo.pages}&keyword=${param.keyword}">末页</a>
+                                        <a href="index/to/food?pageNum=${pageInfo.pages}&keyword=${param.keyword}&pageSize=${param.pageSize}">末页</a>
                                     </li>
                                 </ul>
                             </td>
@@ -938,6 +969,23 @@
     </aside>
 </section>
 
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">系统消息</h4>
+            </div>
+            <div class="modal-body">确认删除该数据吗?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="btn_delete">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
 <div id="dialog" class="modal-block mfp-hide">
     <section class="panel">
         <header class="panel-heading">
@@ -962,6 +1010,7 @@
 </div>
 
 <!-- Vendor -->
+<script src="jquery/jquery-2.2.4.min.js"></script>
 <script src="assets/vendor/jquery/jquery.js"></script>
 <script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
 <script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
@@ -987,5 +1036,116 @@
 
 <!-- Examples -->
 <script src="assets/javascripts/tables/examples.datatables.editable.js"></script>
+
+<script src="jquery/jquery-2.2.4.min.js"></script>
+<script src="layer/layer.js"></script>
+<script>
+    $(function () {
+        var pageSelect = $("#pageSelect");
+        //初始化下拉列表的默认值
+        pageSelect.val(${param.pageSize});
+        //监听下拉列表的事件
+        pageSelect.change(function () {
+            //获取当前选中的值
+            var val = pageSelect.val();
+            //跳转页面
+            var url = 'index/to/food?pageSize=' + val + '&pageNum=' + ${pageInfo.pageNum};
+            window.location.href = url;
+        });
+
+        //监听添加按钮的点击事件
+        $("#addToTable").click(function () {
+            console.log(111);
+            //为表格添加新的一行
+            $("#datatable-editable-tbody").prepend('<tr role="row" class="adding odd">\n' +
+                '    <td class="sorting_1">\n' +
+                '        <input type="text" id="" class="form-control input-block" value="无需填写" disabled="disabled">\n' +
+                '    </td>\n' +
+                '    <td>\n' +
+                '        <input type="text" id="add_name" class="form-control input-block" value="">\n' +
+                '    </td>\n' +
+                '    <td>\n' +
+                '        <input type="text" id="add_type" class="form-control input-block" value="">\n' +
+                '    </td>\n' +
+                '    <td>\n' +
+                '        <input type="text" id="add_price" class="form-control input-block" value="">\n' +
+                '    </td>\n' +
+                '    <td>\n' +
+                '        <input type="text" id="add_vip_price" class="form-control input-block" value="">\n' +
+                '    </td>\n' +
+                '    <td class="actions">\n' +
+                '        <a href="javascript:void(0);" class="on-editing save-row" onclick="add_save()">\n' +
+                '            <i class="fa fa-save"></i>\n' +
+                '        </a>\n' +
+                '        <a href="#" class="on-editing cancel-row">\n' +
+                '            <i class="fa fa-times"></i>\n' +
+                '        </a>\n' +
+                '        <a href="#" class="on-default edit-row hidden">\n' +
+                '            <i class="fa fa-pencil"></i>\n' +
+                '        </a>\n' +
+                '        <a href="#" class="on-default remove-row hidden">\n' +
+                '            <i class="fa fa-trash-o"></i>\n' +
+                '        </a>\n' +
+                '    </td>\n' +
+                '</tr>');
+
+            //添加了新的行后，禁用添加按钮
+            $("#addToTable").attr({"disabled": "disabled"});
+        });
+    });
+
+    //点击保存按钮保存新增的数据
+    function add_save() {
+        //取出新增菜品的信息
+        var add_name_val = $("#add_name").val();
+        var add_type_val = $("#add_type").val();
+        var add_price_val = $("#add_price").val();
+        var add_vip_price_val = $("#add_vip_price").val();
+
+        //将该信息传递给控制方法
+        $.ajax({
+            url: 'food/to/save',
+            type: 'post',
+            data: {
+                name: add_name_val,
+                cuisineId: add_type_val,
+                price: add_price_val,
+                vipPrice: add_vip_price_val
+            },
+            success: function (data) {
+                //跳转至最后一页
+                console.log(data);
+                window.location.href = 'index/to/food?pageNum=${pageInfo.pages}&keyword=${param.keyword}&pageSize=${param.pageSize}';
+            }
+        });
+    }
+
+    //点击模态框的确定按钮，删除指定的菜品数据
+    $("#btn_delete").click(function () {
+        //获取要删除的菜品id
+        var delete_id = $(this).attr('delete_id');
+        //发送ajax请求执行删除
+        $.ajax({
+            url: 'food/to/delete',
+            type: 'post',
+            data: {
+                delete_id:delete_id
+            },
+            success:function (data) {
+                //刷新页面，但保持原来的显示效果不变
+                window.location.href = 'index/to/food?pageNum=${pageInfo.pageNum}&keyword=${param.keyword}&pageSize=${param.pageSize}';
+            }
+        });
+        //执行删除后关闭模态框
+        $("#myModal").modal("hide");
+    });
+
+    //点击删除操作的超链接，将菜品id传递给模态框
+    function food_delete(jquery) {
+        var delete_id = jquery.attr('delete_id');
+        //将菜品id传递给模态框
+        $("#btn_delete").attr("delete_id",delete_id);
+    }
+</script>
 </body>
 </html>

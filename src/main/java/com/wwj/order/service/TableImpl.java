@@ -43,7 +43,7 @@ public class TableImpl implements TableService{
     }
 
     /**
-     * 对菜品数据进行分页查询
+     * 对菜品数据进行分页显示
      * @param pagNum
      * @param pageSize
      * @param keyword
@@ -59,8 +59,32 @@ public class TableImpl implements TableService{
         return pageInfo;
     }
 
+    /**
+     * 对菜系数据进行分页显示
+     * @param pagNum
+     * @param pageSize
+     * @param keyword
+     * @return
+     */
     @Override
     public PageInfo<Cuisine> getPageInfoFromCuisine(Integer pagNum, Integer pageSize, String keyword) {
         return null;
+    }
+
+    /**
+     * 保存新增的菜品数据
+     */
+    @Override
+    public void saveFood(Food food) {
+        foodMapper.insert(food);
+    }
+
+    /**
+     * 根据id删除菜品
+     * @param delete_id
+     */
+    @Override
+    public void deleteFoodById(Integer delete_id) {
+        foodMapper.deleteByPrimaryKey(delete_id);
     }
 }

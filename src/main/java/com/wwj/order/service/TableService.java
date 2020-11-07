@@ -12,4 +12,8 @@ public interface TableService {
     PageInfo<Food> getPageInfoFromFood(Integer pagNum, Integer pageSize, String keyword);
 
     PageInfo<Cuisine> getPageInfoFromCuisine(Integer pagNum, Integer pageSize, String keyword);
+
+    void saveFood(Food food);
+
+    void deleteFoodById(Integer delete_id);
 }

@@ -11,6 +11,17 @@ public class Food {
 
     private String vipPrice;
 
+    public Food() {
+    }
+
+    public Food(Integer id, String name, Integer cuisineId, String price, String vipPrice) {
+        this.id = id;
+        this.name = name;
+        this.cuisineId = cuisineId;
+        this.price = price;
+        this.vipPrice = vipPrice;
+    }
+
     public Integer getId() {
         return id;
     }
